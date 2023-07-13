@@ -14,8 +14,6 @@ code {
     monospace;
 }
 
-@import-normalize;
-
 body {
   font-family: sans-serif;
   line-height: 1.5;

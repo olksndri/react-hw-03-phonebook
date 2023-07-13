@@ -4,16 +4,19 @@ import { ContactList } from './ContactList';
 import { Filter } from './Filter';
 import { nanoid } from 'nanoid';
 import React, { Component } from 'react';
+import Storage from 'js/storage';
 
 export class App extends Component {
   state = {
-    contacts: [
-      {id: 'id-1', name: 'Rosie Simpson', number: '459-12-56'},
-      {id: 'id-2', name: 'Hermione Kline', number: '443-89-12'},
-      {id: 'id-3', name: 'Eden Clements', number: '645-17-79'},
-      {id: 'id-4', name: 'Annie Copeland', number: '227-91-26'},
-    ],
     filter: '',
+  }
+
+  constructor(props) { 
+    super(props); 
+
+    this.state.contacts = (typeof Storage.load("contacts") === "object" &&
+      Storage.load("contacts") !== null) ?
+      Storage.load("contacts") : [];
   }
 
   onSubmit = (evt) => {
@@ -21,14 +24,16 @@ export class App extends Component {
     if (this.state.contacts.filter(el => el.name === this.state.name).length > 0) { 
         window.alert(`${this.state.name} is already in contacts`)
     } else { 
-        this.setState((state) => {
+       this.setState((state) => {
+        Storage.save("contacts", [...state.contacts, { name: state.name, number: state.number, id: nanoid(), }]);
+        
         return {
           contacts: [...state.contacts, { name: state.name, number: state.number, id: nanoid(), }],
           name: '', 
           number: '',
           filter: ''
         }
-      })
+        })
     }
   }
 
@@ -50,13 +55,14 @@ export class App extends Component {
       }
     })
     this.setState((state) => { 
-      let counter = state.contacts.filter((el, i) => i !== deleteIndex)
-      return { contacts: counter }
+      let counter = state.contacts.filter((el, i) => i !== deleteIndex); 
+      Storage.save("contacts", counter);
+      return { contacts: counter }; 
     })
   }
 
   render() {
-    const { contacts, name, number, filter} = this.state; 
+    const { contacts, name, number, filter } = this.state; 
 
     return ( 
       <>
