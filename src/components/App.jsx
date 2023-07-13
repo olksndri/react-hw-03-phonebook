@@ -3,8 +3,8 @@ import { ContactForm } from './ContactForm';
 import { ContactList } from './ContactList';
 import { Filter } from './Filter';
 import { nanoid } from 'nanoid';
+import { save, load } from 'js/storage';
 import React, { Component } from 'react';
-import Storage from 'js/storage';
 
 export class App extends Component {
   state = {
@@ -14,9 +14,9 @@ export class App extends Component {
   constructor(props) { 
     super(props); 
 
-    this.state.contacts = (typeof Storage.load("contacts") === "object" &&
-      Storage.load("contacts") !== null) ?
-      Storage.load("contacts") : [];
+    this.state.contacts = (typeof load("contacts") === "object" &&
+      load("contacts") !== null) ?
+      load("contacts") : [];
   }
 
   onSubmit = (evt) => {
@@ -25,7 +25,7 @@ export class App extends Component {
         window.alert(`${this.state.name} is already in contacts`)
     } else { 
        this.setState((state) => {
-        Storage.save("contacts", [...state.contacts, { name: state.name, number: state.number, id: nanoid(), }]);
+        save("contacts", [...state.contacts, { name: state.name, number: state.number, id: nanoid(), }]);
         
         return {
           contacts: [...state.contacts, { name: state.name, number: state.number, id: nanoid(), }],
@@ -56,7 +56,7 @@ export class App extends Component {
     })
     this.setState((state) => { 
       let counter = state.contacts.filter((el, i) => i !== deleteIndex); 
-      Storage.save("contacts", counter);
+      save("contacts", counter);
       return { contacts: counter }; 
     })
   }
